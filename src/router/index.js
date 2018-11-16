@@ -15,6 +15,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import { Menu, Home, Profile } from '@/components';
 import { Notes } from '@/notes';
+import { Picks } from '@/picks';
 import { components, AmplifyEventBus } from 'aws-amplify-vue';
 import Amplify, * as AmplifyModules from 'aws-amplify';
 import { AmplifyPlugin } from 'aws-amplify-vue';
@@ -49,7 +50,7 @@ function getUser() {
     if (data && data.signInUserSession) {
       AmplifyStore.commit('setUser', data);
       return data;
-    } 
+    }
   }).catch((e) => {
     AmplifyStore.commit('setUser', null);
     return null
@@ -68,6 +69,15 @@ const router = new Router({
       path: '/notes',
       name: 'Notes',
       component: Notes,
+      params: {
+        'foo': 'bar'
+      },
+      meta: { requiresAuth: true}
+    },
+    {
+      path: '/picks',
+      name: 'Picks',
+      component: Picks,
       params: {
         'foo': 'bar'
       },

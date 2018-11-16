@@ -12,14 +12,24 @@
  */
 
 <template>
-  <div class="nav">
-    <div class="main">
-      <a class="item" v-on:click="home">Home</a>
-      <a class="item" v-on:click="notes">Notes</a>
+  <div class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" v-on:click="home">Home</a>
+      <a role="button" class="navbar-burger" :class="{'is-active': expanded}" aria-label="menu" aria-expanded="false" @click.prevent="expanded = !expanded">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
     </div>
-    <div class="right">
-      <a class="item" v-on:click="profile" v-if="user">Profile</a>
-      <amplify-sign-out v-if="user"></amplify-sign-out>
+    <div class="navbar-menu" :class="{'is-active': expanded}">
+      <div class="navbar-start">
+        <a class="navbar-item" v-on:click="notes">Notes</a>
+        <a class="navbar-item" v-on:click="picks">Picks</a>
+      </div>
+      <div class="navbar-end">
+        <a class="navbar-item" v-on:click="profile" v-if="user">Profile</a>
+        <amplify-sign-out v-if="user"></amplify-sign-out>
+      </div>
     </div>
   </div>
 </template>
@@ -32,10 +42,12 @@ import AmplifyStore from '../store/store';
 export default {
   name: 'Menu',
   data () {
-    return {}
+    return {
+      expanded: false
+    }
   },
   computed: {
-    user() { 
+    user() {
       return AmplifyStore.state.user
     }
   },
@@ -45,6 +57,9 @@ export default {
     },
     notes: function() {
         this.$router.push('/notes')
+    },
+    picks: function() {
+        this.$router.push('/picks')
     },
     profile: function() {
         this.$router.push('/profile')
@@ -56,4 +71,8 @@ export default {
 }
 </script>
 
-
+<style>
+  .navbar {
+    background-color: lightgray;
+  }
+</style>
