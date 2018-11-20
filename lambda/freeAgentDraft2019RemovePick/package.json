@@ -1,0 +1,12 @@
+{
+  "name": "freeagentdraft2019removepick",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "rm freeAgentDraft2019RemovePick.zip && find ./ -path '*/.*' -prune -o -type f -print | zip ./freeAgentDraft2019RemovePick.zip -@ && aws lambda update-function-code --region us-east-1 --function-name freeAgentDraft2019RemovePick --zip-file fileb://./freeAgentDraft2019RemovePick.zip",
+    "invoke": "npm run deploy && aws lambda invoke --function-name freeAgentDraft2019RemovePick --payload '{}' --region us-east-1 output.txt && tail output.txt"
+  },
+  "author": "Cory Martin",
+  "license": "ISC"
+}
