@@ -41,11 +41,24 @@
         </div>
       </div>
     </div>
+    <div class="columns is-centered">
+      <div class="column is-full is-half-desktop">
+        <div class="columns">
+          <div class="column is-1">&nbsp;</div>
+          <div class="column is-5"><b>Total</b></div>
+          <div class="column is-2"><b>{{ totalPoints }} points</b></div>
+          <div class="column is-3"><b>Last Update</b></div>
+        </div>
+      </div>
+    </div>
     <a-pick
       v-for="i in 10"
       :key="i"
       :pick="getPickByRank(i)"
       :rank="i"
+      :canRemove="canRemove(i)"
+      :canMoveUp="canMoveUp(i)"
+      :points="points(i)"
       @remove="remove"
       @moveup="moveup"
     />
@@ -56,7 +69,7 @@
   import Vue from 'vue'
   import AmplifyStore from '../../store/store'
 
-  import { CreatePick, ListPicks, DeletePick, GetAvailablePlayers } from './persist/graphqlActions';
+  import { CreatePick, ListPicks, DeletePick, GetAvailablePlayers, SwitchPicks } from './persist/graphqlActions';
 
   import Pick from './Pick'
 
@@ -73,7 +86,8 @@
           create: CreatePick,
           list: ListPicks,
           delete: DeletePick,
-          listavailable: GetAvailablePlayers
+          listavailable: GetAvailablePlayers,
+          switch: SwitchPicks
         },
         availablePlayers: []
       }
@@ -82,7 +96,6 @@
       this.logger = new this.$Amplify.Logger('NOTES_component')
       this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(this.actions.listavailable, {}))
         .then((res) => {
-          console.log(res);
           this.availablePlayers = res.data.getAvailablePlayers;
           this.pick.playerId = this.filteredAvailablePlayers[0].id;
           this.listPicks();
@@ -98,14 +111,34 @@
         return this.availablePlayers
           .filter(p => self.picks.filter(pick => pick.playerId === p.id).length === 0)
           .sort((a,b) => a.projectedamount > b.projectedamount ? -1 : 1)
+      },
+      totalPoints() {
+        var totalPoints = 0;
+        for (var rank = 1; rank <= 10; rank++) {
+          totalPoints += this.points(rank);
+        }
+        return totalPoints;
       }
     },
     methods: {
-      getPickByRank(i) {
+      points(rank) {
+        var pick = this.getPickByRank(rank);
+        if (!pick || !pick.availablePlayer || !pick.availablePlayer.signedAt) return 0;
+        return (10 - pick.rank) * (pick.overUnder === 'over' ? 1 : -1) * (pick.availablePlayer.actualamount - pick.availablePlayer.projectedamount)
+      },
+      getPickByRank(rank) {
         var self = this;
         return this.picks
-          .map(p => {return { playerId: p.playerId, rank: p.rank, overUnder: p.overUnder, availablePlayer: self.availablePlayers.find(pl => pl.id === p.playerId) }})
-          .find(p => p.rank == i);
+          .find(p => p.rank == rank);
+      },
+      canRemove(rank) {
+        var pick = this.getPickByRank(rank);
+        return pick && pick.availablePlayer && !pick.availablePlayer.signedAt;
+      },
+      canMoveUp(rank) {
+        if (rank === 1) return false;
+        var previousPick = this.getPickByRank(rank - 1);
+        return this.canRemove(rank) && previousPick && previousPick.availablePlayer && !previousPick.availablePlayer.signedAt;
       },
       listPicks() {
         this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(this.actions.list, {}))
@@ -147,21 +180,13 @@
       },
       moveup(playerId) {
         var pick = this.picks.find(p => p.playerId === playerId);
-        var pickSwitch = this.picks.find(p => p.rank === pick.rank -1);
-        this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(this.actions.create, {playerId: pick.playerId, overUnder: pick.overUnder, rank: pick.rank - 1 }))
+        this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(this.actions.switch, { rank1: pick.rank, rank2: pick.rank - 1}))
           .then((res) => {
-            this.logger.info(`Pick updated`, res);
-            this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(this.actions.create, {playerId: pickSwitch.playerId, overUnder: pickSwitch.overUnder, rank: pickSwitch.rank + 1 }))
-              .then((res) => {
-                this.logger.info(`Pick updated`, res);
-                this.listPicks();
-              })
-              .catch((e) => {
-                this.logger.error(`Error updating Pick`, e)
-              })
+            this.logger.info(`Picks switched`, res);
+            this.picks = res.data.switchPicks;
           })
           .catch((e) => {
-            this.logger.error(`Error updating Pick`, e)
+            this.logger.error(`Error switching Picks`, e);
           })
       }
     }

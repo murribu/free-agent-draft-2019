@@ -12,7 +12,7 @@
  */
 
 <template>
-  <div class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar is-info" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" v-on:click="home">Home</a>
       <a role="button" class="navbar-burger" :class="{'is-active': expanded}" aria-label="menu" aria-expanded="false" @click.prevent="expanded = !expanded">
@@ -23,8 +23,9 @@
     </div>
     <div class="navbar-menu" :class="{'is-active': expanded}">
       <div class="navbar-start">
-        <a class="navbar-item" v-on:click="notes">Notes</a>
         <a class="navbar-item" v-on:click="picks">Picks</a>
+        <a class="navbar-item" v-on:click="actuals">Actuals</a>
+        <a class="navbar-item" v-on:click="leaderboard">Leaderboard</a>
       </div>
       <div class="navbar-end">
         <a class="navbar-item" v-on:click="profile" v-if="user">Profile</a>
@@ -55,11 +56,14 @@ export default {
     home: function() {
         this.$router.push('/')
     },
-    notes: function() {
-        this.$router.push('/notes')
-    },
     picks: function() {
         this.$router.push('/picks')
+    },
+    actuals: function() {
+        this.$router.push('/actuals')
+    },
+    leaderboard: function() {
+        this.$router.push('/leaderboard')
     },
     profile: function() {
         this.$router.push('/profile')
@@ -70,9 +74,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .navbar {
-    background-color: lightgray;
-  }
-</style>

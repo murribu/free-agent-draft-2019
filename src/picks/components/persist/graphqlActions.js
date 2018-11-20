@@ -13,6 +13,17 @@ const ListPicks = `query GetMyPicks {
     rank
     overUnder
     createdAt
+    availablePlayer {
+      player {
+        first_name
+        last_name
+      }
+      projectedamount
+      projectedyears
+      actualyears
+      actualamount
+      signedAt
+    }
   }
 }`
 
@@ -36,12 +47,35 @@ const GetAvailablePlayers = `query GetAvailablePlayers {
     projectedamount
     actualyears
     actualamount
+    signedAt
   }
 }`
+
+const SwitchPicks = `mutation SwitchPicks ($rank1: Int!, $rank2: Int!) {
+  switchPicks (rank1: $rank1, rank2: $rank2) {
+    playerId
+    pickId
+    rank
+    overUnder
+    createdAt
+    availablePlayer {
+      player {
+        first_name
+        last_name
+      }
+      projectedamount
+      projectedyears
+      actualyears
+      actualamount
+      signedAt
+    }
+  }
+}`;
 
 export {
   CreatePick,
   ListPicks,
   DeletePick,
-  GetAvailablePlayers
+  GetAvailablePlayers,
+  SwitchPicks
 }
