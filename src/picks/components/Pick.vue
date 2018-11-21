@@ -1,6 +1,6 @@
 <template>
   <div class="columns is-centered">
-    <div class="column is-full is-half-desktop">
+    <div class="column is-full is-three-quarters-desktop">
       <div class="columns">
         <div class="column is-1">{{ rank }}</div>
         <div class="column is-5">{{ pick ? pick.availablePlayer.player.first_name + " " + pick.availablePlayer.player.last_name + " (" + pick.overUnder + " " + pick.availablePlayer.projectedamount + "M)" : '' }}</div>
@@ -13,7 +13,7 @@
             Signed for {{ pick.availablePlayer.actualyears }} years and ${{ pick.availablePlayer.actualamount }}M
           </div>
         </div>
-        <div class="column is-3">{{ prettyDate(pick.createdAt) }}</div>
+        <div class="column is-3">{{ pick ? prettyDate(pick.createdAt): '' }}</div>
       </div>
     </div>
   </div>

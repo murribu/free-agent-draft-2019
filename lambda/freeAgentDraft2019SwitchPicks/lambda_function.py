@@ -58,7 +58,7 @@ def lambda_handler(event, context):
       Key={ 'playerId': picks_to_switch[0]["playerId"], 'userId': event["userId"] },
       UpdateExpression='Set #rank = :rank, createdAt = :createdAt',
       ExpressionAttributeNames = { "#rank": "rank" },
-      ExpressionAttributeValues={':rank': int(picks_to_switch[1]["rank"]), ':createdAt': event["createdAt"]}
+      ExpressionAttributeValues={':rank': new_rank, ':createdAt': event["createdAt"]}
     )
 
   response = picks_table.query(KeyConditionExpression=Key('userId').eq(event["userId"]))

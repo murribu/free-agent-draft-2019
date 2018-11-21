@@ -62,7 +62,7 @@
     },
     methods: {
       prettyDate(str) {
-        return new Date(str).toDateString()
+        return new Date(str).toUTCString()
       }
     }
   }

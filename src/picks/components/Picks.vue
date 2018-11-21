@@ -42,10 +42,10 @@
       </div>
     </div>
     <div class="columns is-centered">
-      <div class="column is-full is-half-desktop">
+      <div class="column is-full is-three-quarters-desktop">
         <div class="columns">
           <div class="column is-1">&nbsp;</div>
-          <div class="column is-5"><b>Total</b></div>
+          <div class="column is-5"><b class="is-pulled-right">Total</b></div>
           <div class="column is-2"><b>{{ totalPoints }} points</b></div>
           <div class="column is-3"><b>Last Update</b></div>
         </div>
@@ -138,7 +138,7 @@
       canMoveUp(rank) {
         if (rank === 1) return false;
         var previousPick = this.getPickByRank(rank - 1);
-        return this.canRemove(rank) && previousPick && previousPick.availablePlayer && !previousPick.availablePlayer.signedAt;
+        return this.canRemove(rank) && (!previousPick || previousPick.availablePlayer && !previousPick.availablePlayer.signedAt);
       },
       listPicks() {
         this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(this.actions.list, {}))
